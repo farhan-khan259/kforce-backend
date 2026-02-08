@@ -309,6 +309,8 @@ app.use(cors({
     origin: [
         'https://k-forcemethod.com',
         'https://www.k-forcemethod.com',
+        'https://kforce-backend.onrender.com',
+        'https://www.kforce-backend.onrender.com',
         'http://localhost:5500',
         'http://127.0.0.1:5500'
     ],
