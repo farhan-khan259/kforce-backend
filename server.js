@@ -277,283 +277,421 @@
 
 
 
-const express = require('express');
-const nodemailer = require('nodemailer');
-const cors = require('cors');
+// const express = require('express');
+// const nodemailer = require('nodemailer');
+// const cors = require('cors');
+
+// const app = express();
+
+// // Middleware
+// app.use(cors({
+//     origin: [
+//         'https://k-forcemethod.com',
+//         'https://www.k-forcemethod.com',
+//         'http://localhost:5500',
+//         'http://127.0.0.1:5500'
+//     ],
+//     credentials: true,
+//     methods: ['GET', 'POST', 'OPTIONS'],
+//     allowedHeaders: ['Content-Type']
+// }));
+
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+
+// // Enhanced transporter with multiple fallbacks
+// const createTransporter = () => {
+//     // Try multiple configurations
+//     const configs = [
+//         // Configuration 1: Gmail with OAuth2-like settings
+//         {
+//             host: 'smtp.gmail.com',
+//             port: 587,
+//             secure: false, // false for port 587
+//             auth: {
+//                 user: process.env.EMAIL_USER || 'kforcemethod@gmail.com',
+//                 pass: process.env.EMAIL_PASS // Make sure NO spaces in app password
+//             },
+//             tls: {
+//                 ciphers: 'SSLv3',
+//                 rejectUnauthorized: false
+//             },
+//             connectionTimeout: 10000,
+//             greetingTimeout: 10000,
+//             socketTimeout: 10000
+//         },
+//         // Configuration 2: Gmail with SSL
+//         {
+//             host: 'smtp.gmail.com',
+//             port: 465,
+//             secure: true,
+//             auth: {
+//                 user: process.env.EMAIL_USER || 'kforcemethod@gmail.com',
+//                 pass: process.env.EMAIL_PASS
+//             },
+//             tls: {
+//                 rejectUnauthorized: false
+//             }
+//         }
+//     ];
+
+//     // Try each configuration
+//     for (const config of configs) {
+//         try {
+//             const transporter = nodemailer.createTransport(config);
+//             transporter.verify((error, success) => {
+//                 if (error) {
+//                     console.log(`Config ${config.port} failed:`, error.message);
+//                 } else {
+//                     console.log(`✅ Using SMTP config: port ${config.port}, secure: ${config.secure}`);
+//                 }
+//             });
+//             return transporter;
+//         } catch (error) {
+//             console.log(`Config ${config.port} error:`, error.message);
+//         }
+//     }
+
+//     throw new Error('All SMTP configurations failed');
+// };
+
+// // Health check
+// app.get('/health', (req, res) => {
+//     res.json({
+//         status: 'OK',
+//         timestamp: new Date().toISOString(),
+//         service: 'K-Force Email API'
+//     });
+// });
+
+// // Send email endpoint
+// app.post('/send-exercises', async (req, res) => {
+//     console.log('📧 Email request received:', {
+//         name: req.body.name,
+//         email: req.body.email,
+//         ip: req.ip,
+//         time: new Date().toISOString()
+//     });
+
+//     try {
+//         const { name, email } = req.body;
+
+//         // Validation
+//         if (!name || !email) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'Name and email are required'
+//             });
+//         }
+
+//         // Email regex validation
+//         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//         if (!emailRegex.test(email)) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'Please enter a valid email address'
+//             });
+//         }
+
+//         // Create transporter
+//         const transporter = createTransporter();
+
+//         // Simple email template (reduced complexity for reliability)
+//         const mailOptions = {
+//             from: `"K-Force Method" <${process.env.EMAIL_USER || 'kforcemethod@gmail.com'}>`,
+//             to: email,
+//             subject: `Your Free Training Program - ${name}`,
+//             text: `
+// Hi ${name},
+
+// Thank you for requesting the K-Force Method Training Program!
+
+// Here's your direct access link:
+// https://k-forcemethod.com/exercises.html
+
+// The program includes:
+// • 9 powerful full-body exercises
+// • Video demonstrations for each exercise
+// • Complete sets and reps guidance
+// • Proper breathing techniques
+
+// Start transforming your strength today!
+
+// Best regards,
+// The K-Force Team
+//             `,
+//             html: `
+// <!DOCTYPE html>
+// <html>
+// <head>
+//     <style>
+//         body { font-family: Arial, sans-serif; line-height: 1.6; }
+//         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+//         .header { background: #1c1917; color: white; padding: 20px; text-align: center; }
+//         .content { padding: 20px; background: #f9f9f9; }
+//         .button { display: inline-block; background: #ea580c; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; }
+//         .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+//     </style>
+// </head>
+// <body>
+//     <div class="container">
+//         <div class="header">
+//             <h1>K-FORCE METHOD</h1>
+//             <h2>Your Training Program is Ready!</h2>
+//         </div>
+//         <div class="content">
+//             <p>Hi ${name},</p>
+//             <p>Thank you for requesting the <strong>K-Force Method Training Program</strong>!</p>
+//             <p>Your 1-Day Full Body Program with 9 powerful exercises is ready for you.</p>
+
+//             <div style="text-align: center; margin: 30px 0;">
+//                 <a href="https://k-forcemethod.com/exercises.html" class="button">
+//                     🔥 ACCESS YOUR EXERCISES NOW
+//                 </a>
+//             </div>
+
+//             <p><strong>Program includes:</strong></p>
+//             <ul>
+//                 <li>9 powerful full-body exercises</li>
+//                 <li>Video demonstrations for each exercise</li>
+//                 <li>Complete sets and reps guidance</li>
+//                 <li>Proper breathing techniques</li>
+//             </ul>
+
+//             <p>If the button doesn't work, copy and paste this URL:</p>
+//             <p style="background: #eee; padding: 10px; border-radius: 5px;">
+//                 https://k-forcemethod.com/exercises.html
+//             </p>
+
+//             <p>Start your transformation today!</p>
+//             <p>Best regards,<br><strong>The K-Force Team</strong></p>
+//         </div>
+//         <div class="footer">
+//             <p>© ${new Date().getFullYear()} K-Force Method. All rights reserved.</p>
+//         </div>
+//     </div>
+// </body>
+// </html>
+//             `
+//         };
+
+//         // Send email
+//         const info = await transporter.sendMail(mailOptions);
+//         console.log('✅ Email sent successfully:', {
+//             messageId: info.messageId,
+//             to: email
+//         });
+
+//         res.json({
+//             success: true,
+//             message: 'Email sent successfully! Check your inbox.',
+//             messageId: info.messageId
+//         });
+
+//     } catch (error) {
+//         console.error('❌ Email error:', error);
+
+//         // Detailed error logging
+//         let errorMessage = 'Failed to send email. Please try again.';
+//         if (error.code === 'EAUTH') {
+//             errorMessage = 'Email authentication failed. Please check your credentials.';
+//         } else if (error.code === 'ECONNECTION') {
+//             errorMessage = 'Cannot connect to email server. Please check your internet connection.';
+//         } else if (error.message.includes('timeout')) {
+//             errorMessage = 'Connection timeout. Please try again in a few moments.';
+//         }
+
+//         res.status(500).json({
+//             success: false,
+//             message: errorMessage,
+//             error: process.env.NODE_ENV === 'development' ? error.message : undefined
+//         });
+//     }
+// });
+
+// // Test endpoint
+// app.get('/test-email', async (req, res) => {
+//     try {
+//         const transporter = createTransporter();
+//         const testMail = {
+//             from: process.env.EMAIL_USER,
+//             to: process.env.EMAIL_USER,
+//             subject: 'Test Email from K-Force Backend',
+//             text: 'This is a test email from your Render backend.'
+//         };
+
+//         const info = await transporter.sendMail(testMail);
+//         res.json({
+//             success: true,
+//             message: 'Test email sent successfully!',
+//             messageId: info.messageId
+//         });
+//     } catch (error) {
+//         res.status(500).json({
+//             success: false,
+//             message: 'Test failed',
+//             error: error.message
+//         });
+//     }
+// });
+
+// // Root endpoint
+// app.get('/', (req, res) => {
+//     res.json({
+//         service: 'K-Force Email API',
+//         status: 'Running',
+//         endpoints: {
+//             health: '/health',
+//             sendEmail: 'POST /send-exercises',
+//             testEmail: 'GET /test-email'
+//         }
+//     });
+// });
+
+// const PORT = process.env.PORT || 10000;
+// app.listen(PORT, () => {
+//     console.log(`
+// 🚀 K-Force Email Server Started
+// 📍 Port: ${PORT}
+// 📧 Email User: ${process.env.EMAIL_USER || 'Not configured'}
+// 🔗 Health: http://localhost:${PORT}/health
+//     `);
+// });
+
+
+
+
+
+
+const express = require("express");
+const cors = require("cors");
+const { Resend } = require("resend");
 
 const app = express();
 
-// Middleware
+// ==================== MIDDLEWARE ====================
 app.use(cors({
     origin: [
-        'https://k-forcemethod.com',
-        'https://www.k-forcemethod.com',
-        'http://localhost:5500',
-        'http://127.0.0.1:5500'
+        "https://k-forcemethod.com",
+        "https://www.k-forcemethod.com",
+        "http://localhost:5500",
+        "http://127.0.0.1:5500"
     ],
-    credentials: true,
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type']
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"]
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Enhanced transporter with multiple fallbacks
-const createTransporter = () => {
-    // Try multiple configurations
-    const configs = [
-        // Configuration 1: Gmail with OAuth2-like settings
-        {
-            host: 'smtp.gmail.com',
-            port: 587,
-            secure: false, // false for port 587
-            auth: {
-                user: process.env.EMAIL_USER || 'kforcemethod@gmail.com',
-                pass: process.env.EMAIL_PASS // Make sure NO spaces in app password
-            },
-            tls: {
-                ciphers: 'SSLv3',
-                rejectUnauthorized: false
-            },
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 10000
-        },
-        // Configuration 2: Gmail with SSL
-        {
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true,
-            auth: {
-                user: process.env.EMAIL_USER || 'kforcemethod@gmail.com',
-                pass: process.env.EMAIL_PASS
-            },
-            tls: {
-                rejectUnauthorized: false
-            }
-        }
-    ];
+// ==================== RESEND SETUP ====================
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-    // Try each configuration
-    for (const config of configs) {
-        try {
-            const transporter = nodemailer.createTransport(config);
-            transporter.verify((error, success) => {
-                if (error) {
-                    console.log(`Config ${config.port} failed:`, error.message);
-                } else {
-                    console.log(`✅ Using SMTP config: port ${config.port}, secure: ${config.secure}`);
-                }
-            });
-            return transporter;
-        } catch (error) {
-            console.log(`Config ${config.port} error:`, error.message);
-        }
-    }
-
-    throw new Error('All SMTP configurations failed');
-};
-
-// Health check
-app.get('/health', (req, res) => {
+// ==================== HEALTH CHECK ====================
+app.get("/health", (req, res) => {
     res.json({
-        status: 'OK',
-        timestamp: new Date().toISOString(),
-        service: 'K-Force Email API'
-    });
-});
-
-// Send email endpoint
-app.post('/send-exercises', async (req, res) => {
-    console.log('📧 Email request received:', {
-        name: req.body.name,
-        email: req.body.email,
-        ip: req.ip,
+        status: "OK",
+        service: "K-Force Email API",
         time: new Date().toISOString()
     });
+});
+
+// ==================== SEND EXERCISES EMAIL ====================
+app.post("/send-exercises", async (req, res) => {
+    const { name, email } = req.body;
+
+    console.log("📧 Email request:", { name, email });
+
+    if (!name || !email) {
+        return res.status(400).json({
+            success: false,
+            message: "Name and email are required"
+        });
+    }
 
     try {
-        const { name, email } = req.body;
-
-        // Validation
-        if (!name || !email) {
-            return res.status(400).json({
-                success: false,
-                message: 'Name and email are required'
-            });
-        }
-
-        // Email regex validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Please enter a valid email address'
-            });
-        }
-
-        // Create transporter
-        const transporter = createTransporter();
-
-        // Simple email template (reduced complexity for reliability)
-        const mailOptions = {
-            from: `"K-Force Method" <${process.env.EMAIL_USER || 'kforcemethod@gmail.com'}>`,
+        await resend.emails.send({
+            from: "K-Force Method <onboarding@resend.dev>", // works instantly
             to: email,
-            subject: `Your Free Training Program - ${name}`,
-            text: `
-Hi ${name},
-
-Thank you for requesting the K-Force Method Training Program!
-
-Here's your direct access link:
-https://k-forcemethod.com/exercises.html
-
-The program includes:
-• 9 powerful full-body exercises
-• Video demonstrations for each exercise
-• Complete sets and reps guidance
-• Proper breathing techniques
-
-Start transforming your strength today!
-
-Best regards,
-The K-Force Team
-            `,
+            subject: `Your Free Training Program – ${name}`,
             html: `
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #1c1917; color: white; padding: 20px; text-align: center; }
-        .content { padding: 20px; background: #f9f9f9; }
-        .button { display: inline-block; background: #ea580c; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; }
-        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>K-FORCE METHOD</h1>
-            <h2>Your Training Program is Ready!</h2>
-        </div>
-        <div class="content">
-            <p>Hi ${name},</p>
-            <p>Thank you for requesting the <strong>K-Force Method Training Program</strong>!</p>
-            <p>Your 1-Day Full Body Program with 9 powerful exercises is ready for you.</p>
-            
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="https://k-forcemethod.com/exercises.html" class="button">
-                    🔥 ACCESS YOUR EXERCISES NOW
-                </a>
-            </div>
-            
-            <p><strong>Program includes:</strong></p>
-            <ul>
-                <li>9 powerful full-body exercises</li>
-                <li>Video demonstrations for each exercise</li>
-                <li>Complete sets and reps guidance</li>
-                <li>Proper breathing techniques</li>
-            </ul>
-            
-            <p>If the button doesn't work, copy and paste this URL:</p>
-            <p style="background: #eee; padding: 10px; border-radius: 5px;">
-                https://k-forcemethod.com/exercises.html
-            </p>
-            
-            <p>Start your transformation today!</p>
-            <p>Best regards,<br><strong>The K-Force Team</strong></p>
-        </div>
-        <div class="footer">
-            <p>© ${new Date().getFullYear()} K-Force Method. All rights reserved.</p>
-        </div>
-    </div>
-</body>
-</html>
-            `
-        };
+        <div style="font-family:Arial;max-width:600px;margin:auto">
+          <h2>Hi ${name},</h2>
+          <p>Your <strong>K-Force Method Training Program</strong> is ready.</p>
 
-        // Send email
-        const info = await transporter.sendMail(mailOptions);
-        console.log('✅ Email sent successfully:', {
-            messageId: info.messageId,
-            to: email
+          <div style="text-align:center;margin:30px 0">
+            <a href="https://k-forcemethod.com/exercises.html"
+               style="background:#ea580c;color:#fff;padding:14px 22px;
+                      text-decoration:none;border-radius:6px;font-weight:bold">
+              🔥 ACCESS YOUR EXERCISES
+            </a>
+          </div>
+
+          <p>Includes:</p>
+          <ul>
+            <li>9 full-body exercises</li>
+            <li>Video demonstrations</li>
+            <li>Sets & reps guidance</li>
+            <li>Breathing techniques</li>
+          </ul>
+
+          <p>– K-Force Team</p>
+        </div>
+      `
         });
+
+        console.log("✅ Email sent to", email);
 
         res.json({
             success: true,
-            message: 'Email sent successfully! Check your inbox.',
-            messageId: info.messageId
+            message: "Email sent successfully"
         });
 
     } catch (error) {
-        console.error('❌ Email error:', error);
-
-        // Detailed error logging
-        let errorMessage = 'Failed to send email. Please try again.';
-        if (error.code === 'EAUTH') {
-            errorMessage = 'Email authentication failed. Please check your credentials.';
-        } else if (error.code === 'ECONNECTION') {
-            errorMessage = 'Cannot connect to email server. Please check your internet connection.';
-        } else if (error.message.includes('timeout')) {
-            errorMessage = 'Connection timeout. Please try again in a few moments.';
-        }
+        console.error("❌ Resend error:", error);
 
         res.status(500).json({
             success: false,
-            message: errorMessage,
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+            message: "Email service failed. Please try again."
         });
     }
 });
 
-// Test endpoint
-app.get('/test-email', async (req, res) => {
+// ==================== TEST EMAIL ====================
+app.get("/test-email", async (req, res) => {
     try {
-        const transporter = createTransporter();
-        const testMail = {
-            from: process.env.EMAIL_USER,
-            to: process.env.EMAIL_USER,
-            subject: 'Test Email from K-Force Backend',
-            text: 'This is a test email from your Render backend.'
-        };
-
-        const info = await transporter.sendMail(testMail);
-        res.json({
-            success: true,
-            message: 'Test email sent successfully!',
-            messageId: info.messageId
+        const result = await resend.emails.send({
+            from: "K-Force Method <onboarding@resend.dev>",
+            to: "itsfarhan259@gmail.com",
+            subject: "Resend Test – Render Working",
+            html: "<strong>Resend email is working perfectly 🚀</strong>"
         });
+
+        res.json({ success: true, result });
+
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Test failed',
             error: error.message
         });
     }
 });
 
-// Root endpoint
-app.get('/', (req, res) => {
+// ==================== ROOT ====================
+app.get("/", (req, res) => {
     res.json({
-        service: 'K-Force Email API',
-        status: 'Running',
+        service: "K-Force Email API",
+        status: "Running",
         endpoints: {
-            health: '/health',
-            sendEmail: 'POST /send-exercises',
-            testEmail: 'GET /test-email'
+            health: "/health",
+            sendExercises: "POST /send-exercises",
+            test: "/test-email"
         }
     });
 });
 
+// ==================== START SERVER ====================
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
-    console.log(`
-🚀 K-Force Email Server Started
-📍 Port: ${PORT}
-📧 Email User: ${process.env.EMAIL_USER || 'Not configured'}
-🔗 Health: http://localhost:${PORT}/health
-    `);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
