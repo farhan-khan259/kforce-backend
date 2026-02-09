@@ -611,7 +611,7 @@ app.post("/send-exercises", async (req, res) => {
 
     try {
         await resend.emails.send({
-            from: "K-Force Method <onboarding@resend.dev>", // works instantly
+            from: "K-Force Method <info@k-forcemethod.com>", // works instantly
             to: email,
             subject: `Your Free Training Program – ${name}`,
             html: `
@@ -661,7 +661,7 @@ app.post("/send-exercises", async (req, res) => {
 app.get("/test-email", async (req, res) => {
     try {
         const result = await resend.emails.send({
-            from: "K-Force Method <onboarding@resend.dev>",
+            from: "K-Force Method <info@k-forcemethod.com>",
             to: "itsfarhan259@gmail.com",
             subject: "Resend Test – Render Working",
             html: "<strong>Resend email is working perfectly 🚀</strong>"
